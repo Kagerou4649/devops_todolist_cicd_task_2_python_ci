@@ -32,7 +32,7 @@ jobs:
       - name: Install dependencies
         run: |
            python -m pip install --upgrade pip
-           pip install flake8 pytest pytest-cov
+           pip install flake8 coverage
            pip install -r requirements.txt
 
       - name: Lint with flake8
@@ -47,17 +47,17 @@ jobs:
           cd ../
           flake8 . --exit-zero --max-complexity=10 --statistics
 
+      - name: Run tests
+        run: |
+          python manage.py test
+
       - name: Test with pytest
         run: |
-          pytest -v --cov=. --cov-report=term-missing --cov-report=json
+          coverage run --source='.' manage.py test
+          coverage report
 
       - name: Upload code as artifact
         uses: actions/upload-artifact@v3
         with:
           name: python-source-code
           path: ./src
-
-      - name: Output pipeline run link
-        if: success()
-        run: |
-          echo "Pipeline run link: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
